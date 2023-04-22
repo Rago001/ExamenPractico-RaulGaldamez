@@ -13,6 +13,7 @@ namespace ExamenPractico_RaulGaldamez.Utilities {
             CreateMap<SurveyEditionDTO, Survey>();
             CreateMap<Field, GetFieldDTO>();
             CreateMap<AnswerCreationDTO, Answer>();
+            CreateMap<CredentialsDTO, Users>();
 
         }
 

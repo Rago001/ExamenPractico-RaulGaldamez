@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using ExamenPractico_RaulGaldamez.DTOs;
 using ExamenPractico_RaulGaldamez.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +23,7 @@ namespace ExamenPractico_RaulGaldamez.Controllers {
         }
 
         [HttpPost("createSurvey")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> CreateSurvey(SurveyCreationDTO surveyDTO) {
 
             var newSurvey = mapper.Map<Survey>(surveyDTO);
@@ -43,6 +46,7 @@ namespace ExamenPractico_RaulGaldamez.Controllers {
         }
 
         [HttpPut("{idSurvey:int}/editSurvey")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> EditSurvey(SurveyEditionDTO editionDTO, int idSurvey) {
 
             var selectedSurvey = await context.Survey.FirstOrDefaultAsync(x => x.idSurvey == idSurvey);
@@ -74,6 +78,7 @@ namespace ExamenPractico_RaulGaldamez.Controllers {
         }
 
         [HttpDelete("{idSurvey:int}/deleteSurvey")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> DeleteSurvey(int idSurvey) {
 
             var exists = await context.Survey.AnyAsync( x => x.idSurvey == idSurvey );
@@ -142,6 +147,7 @@ namespace ExamenPractico_RaulGaldamez.Controllers {
         }
 
         [HttpGet("{idSurvey:int}/answers")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<GetSurveyAnswersDTO>> GetSurveyAnswers(int idSurvey) {
 
             var selectedSurvey = await context.Survey.FirstOrDefaultAsync(x => x.idSurvey == idSurvey);

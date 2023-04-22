@@ -6,7 +6,7 @@ namespace ExamenPractico_RaulGaldamez.Models {
 
         [Key]
         public string userName { get; set; }
-        public string password { get; set; }
+        public string userPassword { get; set; }
 
     }
 }
