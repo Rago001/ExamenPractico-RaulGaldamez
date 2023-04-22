@@ -10,6 +10,7 @@ namespace ExamenPractico_RaulGaldamez {
         }
 
         public DbSet<Survey> Survey { get; set; }
+        public DbSet<Field> Field { get; set; }
 
     }
 }

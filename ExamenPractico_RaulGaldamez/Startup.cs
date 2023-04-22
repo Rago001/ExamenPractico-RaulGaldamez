@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace ExamenPractico_RaulGaldamez
 {
@@ -13,11 +15,18 @@ namespace ExamenPractico_RaulGaldamez
 
         public void ConfigureServices(IServiceCollection services) {
 
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(x => 
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("connection")));
+
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+
+            services.AddAutoMapper(typeof(Startup));
 
         }
 
@@ -35,9 +44,7 @@ namespace ExamenPractico_RaulGaldamez
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => {
-
                 endpoints.MapControllers();
-            
             });
 
         }
