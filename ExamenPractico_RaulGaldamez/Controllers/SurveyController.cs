@@ -42,15 +42,8 @@ namespace ExamenPractico_RaulGaldamez.Controllers {
         
         }
 
-        /*[HttpPost("{idSurvey:int}")]
-        public async Task<ActionResult> AnswerSurvey(int idSurvey) { 
-        
-            
-        
-        }*/
-
         [HttpPut("{idSurvey:int}/editSurvey")]
-        public async Task<ActionResult> Put(SurveyEditionDTO editionDTO, int idSurvey) {
+        public async Task<ActionResult> EditSurvey(SurveyEditionDTO editionDTO, int idSurvey) {
 
             var selectedSurvey = await context.Survey.FirstOrDefaultAsync(x => x.idSurvey == idSurvey);
 
@@ -81,7 +74,7 @@ namespace ExamenPractico_RaulGaldamez.Controllers {
         }
 
         [HttpDelete("{idSurvey:int}/deleteSurvey")]
-        public async Task<ActionResult> Delete(int idSurvey) {
+        public async Task<ActionResult> DeleteSurvey(int idSurvey) {
 
             var exists = await context.Survey.AnyAsync( x => x.idSurvey == idSurvey );
 
@@ -94,6 +87,114 @@ namespace ExamenPractico_RaulGaldamez.Controllers {
 
             return Ok();
         
+        }
+
+        [HttpGet("{idSurvey:int}")]
+        public async Task<ActionResult<GetSurveyDTO>> AnswerSurvey(int idSurvey) {
+
+            var selectedSurvey = await context.Survey.FirstOrDefaultAsync(x => x.idSurvey == idSurvey);
+
+            if (selectedSurvey == null) { 
+                return NotFound(); 
+            }
+
+            var selectedSurveyFields = await context.Field.Where(x => x.idSurvey == idSurvey).ToListAsync();
+
+            var surveyDTO = new GetSurveyDTO();
+
+            surveyDTO.idSurvey = selectedSurvey.idSurvey;
+            surveyDTO.surveyName = selectedSurvey.surveyName;
+            surveyDTO.surveyDescription = selectedSurvey.surveyDescription;
+            surveyDTO.userName = selectedSurvey.userName;
+            surveyDTO.fieldsDTOs = new List<GetFieldDTO>();
+
+            foreach (var field in selectedSurveyFields) {
+
+                var fieldDTO = mapper.Map<GetFieldDTO>(field);
+                surveyDTO.fieldsDTOs.Add(fieldDTO);
+
+            }
+
+            return surveyDTO;
+
+        }
+
+        [HttpPost("{idSurvey:int}")]
+        public async Task<ActionResult> AnswerSurvey(int idSurvey, AnswerSurveyDTO answerSurveyDTO) {
+
+            var selectedSurvey = await context.Survey.FirstOrDefaultAsync(x => x.idSurvey == idSurvey);
+
+            if (selectedSurvey == null) {
+                return NotFound();
+            }
+
+            foreach (var answerDTO in answerSurveyDTO.answersDTOList) { 
+            
+                var newAnswer = mapper.Map<Answer>(answerDTO);
+
+                context.Add(newAnswer);
+                await context.SaveChangesAsync();
+            
+            }
+
+            return Ok();
+
+        }
+
+        [HttpGet("{idSurvey:int}/answers")]
+        public async Task<ActionResult<GetSurveyAnswersDTO>> GetSurveyAnswers(int idSurvey) {
+
+            var selectedSurvey = await context.Survey.FirstOrDefaultAsync(x => x.idSurvey == idSurvey);
+
+            if (selectedSurvey == null)
+            {
+                return NotFound();
+            }
+
+            var selectedSurveyFields = await context.Field.Where(x => x.idSurvey == idSurvey).ToListAsync();
+
+            var surveyAnswersDTO = new GetSurveyAnswersDTO();
+
+            surveyAnswersDTO.idSurvey = selectedSurvey.idSurvey;
+            surveyAnswersDTO.surveyName = selectedSurvey.surveyName;
+            surveyAnswersDTO.surveyDescription = selectedSurvey.surveyDescription;
+            surveyAnswersDTO.userName = selectedSurvey.userName;
+
+            surveyAnswersDTO.fieldsAnswerDTOs = new List<GetSurveyFieldsAnswerDTO>();
+
+            foreach (var field in selectedSurveyFields) {
+
+                var selectedFieldAnwers = await context.Answer.Where(x => x.idField == field.idField).ToListAsync();
+
+                var fieldAnswersDTO = new GetSurveyFieldsAnswerDTO();
+
+                fieldAnswersDTO.idField = field.idField;
+                fieldAnswersDTO.fieldName = field.fieldName;
+                fieldAnswersDTO.fieldTitle = field.fieldTitle;
+                fieldAnswersDTO.isRequired = field.isRequired;
+                fieldAnswersDTO.fieldType = field.fieldType;
+                fieldAnswersDTO.idSurvey = field.idSurvey;
+
+                fieldAnswersDTO.answersDTOs = new List<GetAnswersDTO>();
+
+                foreach (var answer in selectedFieldAnwers) {
+                    
+                    var answersDTO = new GetAnswersDTO();
+
+                    answersDTO.idAnswer = answer.idAnswer;
+                    answersDTO.answer = answer.answer;
+                    answersDTO.idField = answer.idField;
+
+                    fieldAnswersDTO.answersDTOs.Add(answersDTO);
+
+                }
+
+                surveyAnswersDTO.fieldsAnswerDTOs.Add(fieldAnswersDTO);
+
+            }
+
+            return surveyAnswersDTO;
+
         }
 
     }

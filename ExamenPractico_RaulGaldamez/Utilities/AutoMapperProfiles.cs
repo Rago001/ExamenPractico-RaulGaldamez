@@ -11,6 +11,8 @@ namespace ExamenPractico_RaulGaldamez.Utilities {
             CreateMap<SurveyCreationDTO, Survey>();
             CreateMap<FieldCreationDTO, Field>();
             CreateMap<SurveyEditionDTO, Survey>();
+            CreateMap<Field, GetFieldDTO>();
+            CreateMap<AnswerCreationDTO, Answer>();
 
         }
 

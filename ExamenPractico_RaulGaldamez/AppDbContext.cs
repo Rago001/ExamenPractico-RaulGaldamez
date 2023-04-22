@@ -9,8 +9,10 @@ namespace ExamenPractico_RaulGaldamez {
         
         }
 
+        public DbSet<Users> Users { get; set; }
         public DbSet<Survey> Survey { get; set; }
         public DbSet<Field> Field { get; set; }
+        public DbSet<Answer> Answer { get; set; }
 
     }
 }
